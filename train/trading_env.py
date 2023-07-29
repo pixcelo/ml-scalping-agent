@@ -16,6 +16,8 @@ class TradingEnv:
         return self.data[self.current_step]
 
     def step(self, action):
+        prev_balance = self.get_balance()
+
         # 0: 何もしない, 1: 購入, 2: 売却, 3: ショート, 4: ショートカバー
         if action == 1 and self.balance > 0:
             self.position += (self.balance / self.data[self.current_step]) * (1 - self.transaction_fee)
@@ -26,8 +28,8 @@ class TradingEnv:
         elif action == 3 and self.balance > 0:  # For simplicity, shorting using balance
             self.position -= (self.balance / self.data[self.current_step]) * (1 - self.transaction_fee)
             self.balance = 0
-        elif action == 4 and self.position < 0: 
-            self.balance += abs(self.position) * self.data[self.current_step] * (1 + self.transaction_fee)  # Short cover may need to pay more than the position
+        elif action == 4 and self.position < 0:
+            self.balance += abs(self.position) * self.data[self.current_step] * (1 + self.transaction_fee)
             self.position = 0
 
         self.current_step += 1
@@ -36,8 +38,19 @@ class TradingEnv:
         else:
             done = False
 
-        reward = self.balance + self.position * self.data[self.current_step] - self.initial_balance
-        return self.data[self.current_step], reward, done
+        # Immediate reward for the transaction
+        immediate_reward = self.get_balance() - prev_balance
+        immediate_reward = np.clip(immediate_reward, -1, 1)  # Scaling immediate reward
+
+        # Penalty for the transaction
+        action_penalty = -0.1 if action in [1, 2, 3, 4] else 0
+
+        # Penalty for holding a position for a long duration
+        duration_penalty = -0.01 if self.position != 0 else 0
+
+        total_reward = immediate_reward + 0.1 * action_penalty + 0.1 * duration_penalty
+
+        return self.data[self.current_step], total_reward, done
 
     def get_balance(self):
         return self.balance + self.position * self.data[self.current_step]
