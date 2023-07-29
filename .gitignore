@@ -184,6 +184,8 @@ model/
 # log files
 log/
 
+csv/
+
 .DS_Store
 
 # End of https://www.toptal.com/developers/gitignore/api/python
