@@ -6,9 +6,9 @@ class TradingEnvPlotter:
         self.balances = []
         self.actions = []
         self.prices = []
+        self.episode_rewards = []
 
     def record_step(self, action):
-        """ 現在の状態を記録する """
         balance = self.env.get_balance()
         price = self.env.data[self.env.current_step]
 
@@ -17,7 +17,6 @@ class TradingEnvPlotter:
         self.prices.append(price)
 
     def plot_balance(self):
-        """ バランスの履歴をプロットする """
         plt.figure(figsize=(10, 5))
         plt.plot(self.balances, label='Balance')
         plt.legend()
@@ -39,7 +38,6 @@ class TradingEnvPlotter:
         plt.show()
 
     def plot_prices_and_trades(self):
-        """ 価格と取引の履歴をプロットする """
         plt.figure(figsize=(10, 5))
         plt.plot(self.prices, label='Price', color='blue', alpha=0.6)
 
@@ -63,5 +61,18 @@ class TradingEnvPlotter:
         plt.title('Price and trades over time')
         plt.xlabel('Step')
         plt.ylabel('Price')
+        plt.grid(True)
+        plt.show()
+
+    def record_episode_reward(self, total_reward):
+        self.episode_rewards.append(total_reward)
+
+    def plot_episode_rewards(self):
+        plt.figure(figsize=(10, 5))
+        plt.plot(self.episode_rewards, label='Episode Rewards')
+        plt.legend()
+        plt.title('Episode rewards over training')
+        plt.xlabel('Episode')
+        plt.ylabel('Total Reward')
         plt.grid(True)
         plt.show()
