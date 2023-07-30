@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.optim as optim
 import numpy as np
@@ -35,3 +36,15 @@ class Agent:
 
         if self.epsilon > self.epsilon_end:
             self.epsilon *= self.epsilon_decay
+
+    def save_model(self, filename='checkpoint.pth'):
+        save_path = os.path.join('..', 'model', filename)
+        torch.save(self.qnetwork.state_dict(), save_path)
+
+    def load_model(self, filename='checkpoint.pth', eval_mode=True):
+        load_path = os.path.join('..', 'model', filename)
+        self.qnetwork.load_state_dict(torch.load(load_path))
+        if eval_mode:
+            self.qnetwork.eval()
+        else:
+            self.qnetwork.train()
