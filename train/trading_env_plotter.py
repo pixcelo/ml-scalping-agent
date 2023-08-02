@@ -10,7 +10,7 @@ class TradingEnvPlotter:
 
     def record_step(self, action):
         balance = self.env.get_balance()
-        price = self.env.data[self.env.current_step]
+        price = self.env.close[self.env.current_step]
 
         self.balances.append(balance)
         self.actions.append(action)
