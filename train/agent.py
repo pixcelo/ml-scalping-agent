@@ -34,7 +34,7 @@ class Agent:
             next_q_values = self.qnetwork(torch.FloatTensor([next_state]))
             target = reward + (1 - done) * self.gamma * torch.max(next_q_values)
 
-        loss = self.loss_fn(q_values[action], target)
+        loss = self.loss_fn(q_values[0, action], target)
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
