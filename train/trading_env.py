@@ -9,6 +9,7 @@ class TradingEnv:
         self.position = 0  # positive: long, negative: short
         self.current_step = 0
         self.transaction_fee = transaction_fee
+        self.reward_calculator = RewardScheme()
 
         # state
         self.close = data['close'].values
@@ -52,8 +53,7 @@ class TradingEnv:
         else:
             done = False
 
-        reward_calculator = RewardScheme()
-        total_reward = reward_calculator.get_reward(prev_balance, self.get_balance(), action)
+        total_reward = self.reward_calculator.get_reward(prev_balance, self.get_balance(), action)
 
         next_state = [
             self.open[self.current_step],
