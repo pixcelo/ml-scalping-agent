@@ -51,5 +51,7 @@ class Agent:
         self.lstmnetwork.load_state_dict(torch.load(load_path))
         if eval_mode:
             self.lstmnetwork.eval()
+            self.epsilon = 0  # Disable random actions
         else:
             self.lstmnetwork.train()
+
