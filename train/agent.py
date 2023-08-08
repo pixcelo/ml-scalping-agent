@@ -6,7 +6,7 @@ from qnetwork import QNetwork
 import torch.optim.lr_scheduler as lr_scheduler
 
 class Agent:
-    def __init__(self, input_dim, action_dim=5, learning_rate=1e-3, gamma=0.99, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.995, step_size=100, gamma_lr=0.9):
+    def __init__(self, input_dim, action_dim=5, learning_rate=1e-3, gamma=0.99, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.999, step_size=100, gamma_lr=0.9):
         self.qnetwork = QNetwork(input_dim, action_dim)
         self.optimizer = optim.Adam(self.qnetwork.parameters(), lr=learning_rate)
         self.gamma = gamma
@@ -15,13 +15,14 @@ class Agent:
         self.epsilon_end = epsilon_end
         self.epsilon_decay = epsilon_decay
         self.scheduler = lr_scheduler.StepLR(self.optimizer, step_size=step_size, gamma=gamma_lr)
+        self.action_dim = action_dim
 
     def step_scheduler(self):
         self.scheduler.step()
 
     def select_action(self, state):
         if np.random.rand() < self.epsilon:
-            return np.random.choice([0, 1, 2, 3, 4])
+            return np.random.choice(range(self.action_dim))
         else:
             with torch.no_grad():
                 q_values = self.qnetwork(torch.FloatTensor([state]))
